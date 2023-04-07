@@ -1,0 +1,7 @@
+dependencies:
+  - pandas
+  - imageio
+  - matplotlib
+  - seaborn
+  - conda-forge::itk
+  - conda-forge::pathlib
