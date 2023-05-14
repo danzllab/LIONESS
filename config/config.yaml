@@ -1,0 +1,45 @@
+# All other configurations are set by default. If you want to add new config options,
+# please modify ../connectomics/config/config.py
+SYSTEM:
+  NUM_GPUS: 8
+  NUM_CPUS: 16
+MODEL:
+  ARCHITECTURE: unet_3d
+  BLOCK_TYPE: residual_se
+  INPUT_SIZE: [65, 129, 129]
+  OUTPUT_SIZE: [65, 129, 129]
+  IN_PLANES: 1
+  OUT_PLANES: 3
+  TARGET_OPT: ["2"]
+  LABEL_EROSION: 1
+  LOSS_OPTION: [['WeightedBCEWithLogitsLoss', "DiceLoss"]]
+  LOSS_WEIGHT: [[1.0, 0.5]]
+  WEIGHT_OPT: [['1', "0"]]
+  OUTPUT_ACT: [["none", "sigmoid"]]
+  NORM_MODE: sync_bn
+DATASET:
+  IMAGE_NAME: '[relative_paths_to_datasets]'
+  LABEL_NAME: '[relative_paths_to_ground_truth_segmentations]'
+  INPUT_PATH: '[base_path]'
+  OUTPUT_PATH: '[path_to_output]'
+  PAD_SIZE: [32, 64, 64]
+SOLVER:
+  LR_SCHEDULER_NAME: WarmupCosineLR
+  BASE_LR: 0.04
+  STEPS: (480000,490000)
+  ITERATION_STEP: 1
+  ITERATION_SAVE: 5000
+  ITERATION_TOTAL: 500000
+  SAMPLES_PER_BATCH: 16
+INFERENCE:
+  INPUT_SIZE: [33, 129, 128]
+  OUTPUT_SIZE: [33, 129, 129]
+  IMAGE_NAME: '[paths_to_test_images_for_inference]'
+  OUTPUT_ACT: ['sigmoid']
+  OUTPUT_PATH: '[base_path_for_output_affinity_maps]'
+  OUTPUT_NAME: '[filenames_for_output_affinity_maps]'
+  PAD_SIZE: [8, 32, 32]
+  AUG_MODE: 'mean'
+  AUG_NUM: 8
+  STRIDE: [16, 64, 64]
+  SAMPLES_PER_BATCH: 16
