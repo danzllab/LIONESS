@@ -1,9 +1,9 @@
 # LIONESS
 ---
 
-Copyright ©2022. Institute of Science and Technology Austria (IST Austria). All Rights Reserved.
+Copyright ©2023. Institute of Science and Technology Austria (IST Austria).
 
-This file is part of the code developed for the paper "Dense synapse-level reconstruction of living brain tissue". This code is free software: you can redistribute it and/or modify it under the terms of the MIT License.
+This file is part of the code developed for the paper "Dense 4D nanoscale reconstruction of living brain tissue". This code is free software: you can redistribute it and/or modify it under the terms of the MIT License.
  
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the MIT License for more details.
  
@@ -15,14 +15,20 @@ The following code is used to prepare LIONESS data for pytorch_connectomics trai
 Additionally, the code provides scripts for processing and validating the obtained segmentations.
 
 Instructions for installing and using the **pytorch_connectomics** software can be found on the project website: <https://connectomics.readthedocs.io/en/latest/index.html> 
-The configuration file for the pytorch_connectomics framework is provided.
+A configuration file for the pytorch_connectomics framework is provided in the "config" folder.
 
 ## SYSTEM REQUIREMENTS
 ---
-The software was tested on Linux system (Debian GNU/Linux 11 (bullseye)) 
+The software was tested on Linux system (Debian GNU/Linux 11 (bullseye)). 
+The code requires the Conda package manager (https://docs.conda.io/en/latest/).
+The code was tested with Python 2.7.
+Required packages will be installed automatically when following the installation guide below.
 
 ## CONTENTS
 ---
+The tools the user will interact with can be found in the folder "tools/cli".
+
+Folder contents:
 - lioness --> base modules to handle computations on segmentations
   - segmentation
     - segmentation.py --> basic handling of segmentation
@@ -45,6 +51,9 @@ The software was tested on Linux system (Debian GNU/Linux 11 (bullseye))
 ---
 In order to install dependencies, run the following commands:
 ```
+git clone https://github.com/danzllab/LIONESS.git
+cd LIONESS
+
 git clone https://github.com/zudi-lin/zwatershed.git
 cd zwatershed
 git reset --hard c2a046f2510bf3972266a87b52724375fd70a160
@@ -74,34 +83,37 @@ cd ..
 ```
 Installation takes about 30 minutes.
 
-## DATA
+## DEMONSTRATION DATA
 ---
 lioness_data.tif --> demo LIONESS dataset.
 
 segmentation.tif --> corresponding segmentation.
 
-affinity_map.h5 --> output of the UNet that is used to run the watershed stage.
+affinity_map.h5 --> output of the UNet (for a different dataset) that is used as input to the watershed stage.
 
 ## DEMO
 --- 
 Each script can be tested using the following command line command:
+To use the scripts on your own data or the test data provided, replace the names of the demo files below with your own I/O paths and filenames. 
+A more detailed description of all the additional arguments is provided in each individual python script.
+
 1. preprocess_dataset.py
 ```
-python preprocess_dataset.py lioness_data.tif lioness_data_preprocessed.tif
+python tools/cli/preprocess_dataset.py demo_data/lioness_data.tif demo_data/lioness_data_preprocessed.tif
 ```
 Expected output: One new file 'lioness_data_preprocessed.tif' with the preprocessed data.
 Expected runtime: 5-10 seconds.
 
 2. run_watershed.py
 ```
-python run_watershed.py affinity_map.h5 . --wz-thres 0.4
+python tools/cli/run_watershed.py demo_data/affinity_map.h5 . --wz-thres 0.4
 ```
 Expected output: Two new files 'affinity_map-seg0.40.h5' and 'affinity_map-seg0.40.tif' with the resulting segmentation, generated using watershed threshold=0.4.
 Expected runtime: 3 min.
 
 3. evaluate_oversegmentation.py
 ```
-python evaluate_oversegmentation.py segmentation.tif segmentation.tif
+python tools/cli/evaluate_oversegmentation.py demo_data/segmentation.tif demo_data/segmentation.tif
 ```
 Note: for purposes of demonstration, the same segmentation file is used as the ground truth and as the evaluated file.
 Expected output: stats.csv file with the resulting statistics.
@@ -109,25 +121,22 @@ Expected runtime: 15 sec.
 
 4. clean_segmentation.py
 ```
-python clean_segmentation.py segmentation.tif --size 3 --slices 3 --output segmentation_cleaned.tif
+python tools/cli/clean_segmentation.py demo_data/segmentation.tif --size 3 --slices 3 --output demo_data/segmentation_cleaned.tif
 ```
 Expected output: One new file 'segmentation_cleaned.tif' with the processed segmentation.
 Expected runtime: 1 min.
 
 5. show_seg_info.py
 ```
-python show_seg_info.py segmentation.tif
+python tools/cli/show_seg_info.py demo_data/segmentation.tif
 ```
 Expected output: information about the input segmentation file displayed in the terminal.
 Expected runtime: 15-20 sec.
 
 6. compute_ari_error.py
 ```
-python compute_ari_error.py --seg segmentation.tif --gt segmentation.tif --out result.txt
+python tools/cli/compute_ari_error.py --seg demo_data/segmentation.tif --gt demo_data/segmentation.tif --out result.txt
 ```
 Note: for purposes of demonstration, the same segmentation file is used as the ground truth and as the evaluated file.
 Expected output: result.txt file with the ARI error value.
 Expected runtime: 5 sec.
-
-To use the scripts on your own data, replace the names of the demo files with your own I/O paths. 
-A more detailed description of all the additional arguments is written in each individual python script.
